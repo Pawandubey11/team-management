@@ -4,6 +4,7 @@ frontend/node_modules/
 **/.cache/
 .env
 .env.*
+!backend/.env.example
 dist/
 build/
 .vscode/
