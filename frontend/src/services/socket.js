@@ -1,6 +1,10 @@
-import { io } from 'socket.io-client';
+import { io } from "socket.io-client";
 
-const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || (process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:5000');
+const SOCKET_URL =
+  process.env.REACT_APP_SOCKET_URL ||
+  (process.env.NODE_ENV === "production"
+    ? window.location.origin
+    : "http://localhost:5000");
 
 let socket = null;
 
@@ -9,15 +13,15 @@ export const connectSocket = (token) => {
 
   socket = io(SOCKET_URL, {
     auth: { token },
-    transports: ['websocket', 'polling'],
+    transports: ["websocket", "polling"],
     reconnection: true,
     reconnectionDelay: 1000,
     reconnectionAttempts: 5,
   });
 
-  socket.on('connect', () => console.log('🔌 Socket connected'));
-  socket.on('disconnect', () => console.log('🔌 Socket disconnected'));
-  socket.on('error', (err) => console.error('Socket error:', err));
+  socket.on("connect", () => console.log("🔌 Socket connected"));
+  socket.on("disconnect", () => console.log("🔌 Socket disconnected"));
+  socket.on("error", (err) => console.error("Socket error:", err));
 
   return socket;
 };
@@ -32,17 +36,17 @@ export const disconnectSocket = () => {
 export const getSocket = () => socket;
 
 export const joinRoom = (groupId) => {
-  if (socket) socket.emit('join_room', { groupId });
+  if (socket) socket.emit("join_room", { groupId });
 };
 
 export const sendMessage = (content) => {
-  if (socket) socket.emit('send_message', { content });
+  if (socket) socket.emit("send_message", { content });
 };
 
 export const emitTypingStart = () => {
-  if (socket) socket.emit('typing_start');
+  if (socket) socket.emit("typing_start");
 };
 
 export const emitTypingStop = () => {
-  if (socket) socket.emit('typing_stop');
+  if (socket) socket.emit("typing_stop");
 };
