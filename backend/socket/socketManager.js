@@ -3,13 +3,14 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Group = require('../models/Group');
 const Message = require('../models/Message');
+const { corsOrigin } = require('../config/cors');
 
 let io;
 
 const initSocket = (server) => {
   io = new Server(server, {
     cors: {
-      origin: process.env.CLIENT_URL || 'http://localhost:3000',
+      origin: corsOrigin,
       credentials: true
     }
   });
@@ -36,7 +37,7 @@ const initSocket = (server) => {
 
   io.on('connection', (socket) => {
     const user = socket.user;
-    console.log(`🔌 Connected: ${user.name} (${user.role})`);
+    console.log(`Socket connected: ${user.name} (${user.role})`);
 
     // ─── Join Room ──────────────────────────────────────────────────────────
     socket.on('join_room', async ({ groupId }) => {
@@ -55,7 +56,7 @@ const initSocket = (server) => {
           const userDeptId = user.departmentId?._id?.toString();
           if (!userDeptId || group.departmentId.toString() !== userDeptId) {
             socket.emit('error', { message: 'Access denied. You cannot join this room.' });
-            console.warn(`⛔ Unauthorized room join attempt by ${user.name} for group ${groupId}`);
+            console.warn(`Unauthorized room join attempt by ${user.name} for group ${groupId}`);
             return;
           }
         }
@@ -71,7 +72,7 @@ const initSocket = (server) => {
         socket.currentRoomName = roomName;
 
         socket.emit('joined_room', { groupId, groupName: group.name });
-        console.log(`✅ ${user.name} joined room: ${roomName}`);
+        console.log(`${user.name} joined room: ${roomName}`);
       } catch (err) {
         socket.emit('error', { message: 'Failed to join room.' });
       }
@@ -151,7 +152,7 @@ const initSocket = (server) => {
 
     // ─── Disconnect ─────────────────────────────────────────────────────────
     socket.on('disconnect', () => {
-      console.log(`🔌 Disconnected: ${user.name}`);
+      console.log(`Socket disconnected: ${user.name}`);
     });
   });
 

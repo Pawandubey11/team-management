@@ -147,6 +147,104 @@ The frontend will be available at `http://localhost:3000` and the backend API at
 
 ---
 
+## 🐳 Full-Stack Deployment with Docker
+
+This repo includes a Docker Compose setup for the React frontend, Express backend, and MongoDB database.
+
+### Local full-stack run
+
+```bash
+# From the project root
+docker compose up --build
+```
+
+Services:
+
+- Frontend: `http://localhost:8080`
+- Backend API: `http://localhost:5000/api`
+- MongoDB: `localhost:27017`
+
+The frontend container serves the React build through nginx and proxies `/api` and `/socket.io` to the backend container, so the API and real-time chat work from one browser origin.
+
+### Seed demo data
+
+After the containers are running:
+
+```bash
+docker compose exec backend npm run seed
+```
+
+Demo credentials:
+
+- Admin: `admin@nexuscorp.com` / `admin123`
+- Employee: `alice@nexuscorp.com` / `emp123`
+
+### Production environment variables
+
+Set these before deploying:
+
+```bash
+JWT_SECRET=use-a-long-random-production-secret
+CLIENT_URL=https://your-frontend-domain.example
+```
+
+If you use a managed database such as MongoDB Atlas, set:
+
+```bash
+MONGODB_URI=mongodb+srv://...
+```
+
+For separate frontend/backend hosts, set these in the frontend build environment:
+
+```bash
+REACT_APP_API_URL=https://your-backend-domain.example/api
+REACT_APP_SOCKET_URL=https://your-backend-domain.example
+```
+
+If the frontend is served behind the included nginx proxy, leave those frontend variables unset so it uses `/api` and same-origin Socket.IO.
+
+### Deploy on a new server
+
+After creating a cloud instance and installing Docker with the Docker Compose plugin:
+
+```bash
+git clone https://github.com/Pawandubey11/team-management.git
+cd team-management
+cp .env.production.example .env
+nano .env
+sh scripts/deploy-docker.sh
+```
+
+In `.env`, set:
+
+```bash
+JWT_SECRET=your-long-random-secret
+CLIENT_URL=http://your-server-ip:8080
+```
+
+Open these ports in the instance firewall/security group:
+
+- `8080` for the frontend
+- `5000` for direct backend API access, optional if you only use the frontend proxy
+- `27017` only if you intentionally need external MongoDB access
+
+Useful operations:
+
+```bash
+docker compose ps
+docker compose logs -f
+docker compose restart
+docker compose down
+```
+
+Seed the first demo users:
+
+```bash
+docker compose exec backend npm run seed
+```
+
+---
+
 ## 🔒 Security Features
 
 - JWT-based authentication

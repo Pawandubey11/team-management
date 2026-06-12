@@ -1,6 +1,8 @@
 import { io } from 'socket.io-client';
 
-const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || 'http://localhost:5000';
+const SOCKET_URL =
+  process.env.REACT_APP_SOCKET_URL ||
+  (process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : window.location.origin);
 
 let socket = null;
 
@@ -15,8 +17,8 @@ export const connectSocket = (token) => {
     reconnectionAttempts: 5,
   });
 
-  socket.on('connect', () => console.log('🔌 Socket connected'));
-  socket.on('disconnect', () => console.log('🔌 Socket disconnected'));
+  socket.on('connect', () => console.log('Socket connected'));
+  socket.on('disconnect', () => console.log('Socket disconnected'));
   socket.on('error', (err) => console.error('Socket error:', err));
 
   return socket;
